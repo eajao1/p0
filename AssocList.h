@@ -20,12 +20,15 @@
 
 #pragma once 	 	
 #include "IMap.h"	 
+#include <iostream>
+
+using namespace std;
 
 /*
  ************************************	 
  * Honor pledge (please write your name.) 	 	
  * 	 	
- * I **firstname lastname** have completed this code myself, without
+ * I, Eniola Ajao, have completed this code myself, without
  * unauthorized assistance, and have followed the academic honor code. 
  * 	 	
  * Edit the code below to complete your solution. 
@@ -40,9 +43,9 @@ class AssocList
     // A private struct useful for links of the list	 
     struct Link 	 	
     { 	 	
-	K k;
-	V* v; 	 	
-	Link* next;
+	K k; //key
+	V* v; // Pointer to value	 	
+	Link* next; // Pointer to next link
 
 	Link(const K _k, V* const _v, Link* const _next)
 	    : k(_k), v(_v), next(_next)	
@@ -52,7 +55,7 @@ class AssocList
 
     private:
     // A counter for the total number of keys in the association list
-    unsigned count; 
+    unsigned count = 0; //set count to 0 so I can increment it.
 
     // A pointer to the root node	 
     Link* root;
@@ -70,15 +73,53 @@ class AssocList
     // A method for mutably extending the map with a new key-value association 
     void add(const K& key, V* const val)	 
     {
-	// TODO: write add method	 
+        remove(key);  //remove the key
+        root = new Link(key, val, root); // create a new key value pair, add it to the front.
+        count++; // increment count
     } 	 	
 
     // A method for mutably deleting a key (and its value) from the current map
     bool remove(const K& key)	 
-    { 	 	
-	// TODO: write remove method 	 	
-    } 
-	 
+    { 	
+
+        if (root)  // if there is a root...
+        {
+            if (root->k == key) // if you find the key in the root
+            {
+                Link* old_root = root; // create a pointer to the old root 
+                root = root->next;  // point the root to the next
+                delete old_root;  // delete the old_root, a pointer to the root.
+                count--;
+                return true;
+            }
+
+            else
+            {
+                Link* node = root->next;  // create a new node that is a pointer to root's next.
+                Link* previous_node = root; // create another new node to represent a previous node
+
+                while (node) //while a node exists...
+                {
+                    if (node->k == key) //if you find the key..
+                    {
+                        previous_node->next = node->next;  //set previous node's next to node's next
+                        delete node; // delete the node
+                        count--; // decrement count
+                        return true;  //return true
+                    }
+                    else
+                    {
+                        previous_node = node;  // otherwise, set previous_node to node
+                        node = node->next;     // set node to it's next so we can keep traversing through
+                    }
+                }
+            }
+            return false;
+        }
+        else
+            return false;  // if you don't find it, return false. 
+    }
+
     // A method for looking up the value associated with a given key
     V* lookup(const K& key) const 
     { 
@@ -101,5 +142,7 @@ class AssocList
     unsigned size() const 	 	
     { 	 	
 	// TODO: write size method 
+        return count; //return count, which has been modified in the above code.
+
     }
 };	 
